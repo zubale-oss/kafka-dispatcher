@@ -3,16 +3,7 @@ defmodule KafkaDispatcher do
   Documentation for `KafkaDispatcher`.
   """
 
-  @doc """
-  Hello world.
+  alias KafkaDispatcher.KafkaClient
 
-  ## Examples
-
-      iex> KafkaDispatcher.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
+  defdelegate dispatch(name, topic, key, payload), to: KafkaClient
 end
