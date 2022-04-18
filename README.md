@@ -1,21 +1,18 @@
-# KafkaDispatcher
+# Kafka Dispatcher
 
-**TODO: Add description**
+A simple group of reusable modules for dispatching data into a Kafka instance.
+
+Features:
+
+* automatic partitioning
+* connection pooling
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `kafka_dispatcher` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:kafka_dispatcher, "~> 0.1.0"}
+    {:kafka_dispatcher, gitub: "zubale-oss/kafka-dispatcher"}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/kafka_dispatcher>.
-
