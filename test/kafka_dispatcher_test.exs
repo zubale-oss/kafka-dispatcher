@@ -11,9 +11,7 @@ defmodule KafkaDispatcherTest do
     opts = [
       name: name,
       topic: "my_topic",
-      kafka: [
-        hosts: "localhost:9092"
-      ]
+      kafka: kafka_config()
     ]
 
     {:ok, _pid} = KafkaDispatcher.Supervisor.start_link(opts)
@@ -39,5 +37,24 @@ defmodule KafkaDispatcherTest do
     |> Stream.map(&<<&1>>)
     |> Stream.take(5)
     |> Enum.join()
+  end
+
+  defp kafka_config do
+    [
+      hosts: System.get_env("KAFKA_HOSTS", "localhost:9092"),
+      client_config: [
+        sasl: kafka_auth_config()
+      ]
+    ]
+  end
+
+  defp kafka_auth_config do
+    case {System.get_env("KAFKA_AUTH_USER"), System.get_env("KAFKA_AUTH_PASS")} do
+      {user, pass} when is_binary(user) and is_binary(pass) ->
+        {:plain, user, pass}
+
+      {nil, nil} ->
+        :undefined
+    end
   end
 end

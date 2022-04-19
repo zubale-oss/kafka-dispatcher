@@ -31,19 +31,21 @@ defmodule KafkaDispatcher.Worker do
   end
 
   defp init_client(pool_size, options) do
-    kafka_hosts = hosts_config!(options)
+    kafka_cfg =
+      Keyword.fetch!(options, :kafka)
+      |> Keyword.update!(:hosts, &hosts_config!/1)
 
-    producer_config = Keyword.get(options, :producer_config, [])
+    producer_config = Keyword.get(kafka_cfg, :producer_config, [])
 
     client_config =
-      Keyword.get(options, :client_config, [])
+      Keyword.get(kafka_cfg, :client_config, [])
       |> Keyword.put_new(:auto_start_producers, true)
       |> Keyword.put_new(:default_producer_config, producer_config)
 
     1..pool_size
     |> Enum.find_value(fn id ->
       case :brod.start_link_client(
-             kafka_hosts,
+             kafka_cfg[:hosts],
              to_client_id(options[:pool_name], id),
              client_config
            ) do
@@ -60,10 +62,8 @@ defmodule KafkaDispatcher.Worker do
     Module.concat([pool_name, Worker, :"pub_client_#{n}"])
   end
 
-  defp hosts_config!(config) do
-    kafka_cfg = Keyword.get(config, :kafka, [])
-
-    case Keyword.get(kafka_cfg, :hosts) do
+  defp hosts_config!(hosts) do
+    case hosts do
       cfg when cfg in [nil, ""] ->
         Logger.error("""
           Kafka hosts is set as `#{inspect(cfg)}`. Please configure kafka hosts.
@@ -71,7 +71,7 @@ defmodule KafkaDispatcher.Worker do
 
         raise "Invalid Kafka hosts"
 
-      str ->
+      str when is_binary(str) ->
         str
         |> String.split(",")
         |> Enum.map(fn url ->
