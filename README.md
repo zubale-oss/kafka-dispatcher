@@ -12,7 +12,7 @@ Features:
 ```elixir
 def deps do
   [
-    {:kafka_dispatcher, gitub: "zubale-oss/kafka-dispatcher"}
+    {:kafka_dispatcher, github: "zubale-oss/kafka-dispatcher"}
   ]
 end
 ```
@@ -46,8 +46,17 @@ defmodule MyApp.Application do
           # # or:
           # sasal: {:plain, "username", "secret"}
         ]
-      ]
+      ],
+      name: :my_kafka,
+      topic: "my_topic"
     ]
   end
 end
+```
+
+
+## How to use
+
+```elixir
+KafkaDispatcher.dispatch(:my_kafka, "my_topic", "my_key", Jason.encode!(my_data))
 ```
